@@ -17,6 +17,10 @@ venv\Scripts\activate      # Windows
 
 ### 安装依赖
 ```bash
+# 方式1：最小依赖（推荐初学者）
+pip install -r requirements-minimal.txt
+
+# 方式2：完整依赖（包含API和UI测试）
 pip install -r requirements.txt
 ```
 
@@ -100,8 +104,18 @@ pytest --collect-only
 - `conftest.py` - 测试目录级别的fixtures(会继承根目录的conftest)
 - `test_basic/` - 基础测试示例(测试编写入门)
 - `test_advanced/` - 高级测试示例(fixtures深入、钩子、标记)
+  - `test_hooks.py` - pytest钩子概念介绍
+  - `test_hooks_examples.py` - pytest钩子实际示例(配合conftest.py中的钩子函数)
 - `test_api/` - API测试示例
+  - `test_api_demo.py` - 包含Cookie认证场景的API测试
 - `test_ui/` - UI测试示例(Page Object模式)
+
+**docs/** - 文档目录
+- `pytest_hooks_guide.md` - pytest钩子函数完整使用指南
+- `api_cookie_auth_guide.md` - API Cookie认证测试指南
+
+**data/** - 测试数据
+- `test_data.json` - 示例测试数据文件
 
 ### 关键设计模式
 
@@ -110,8 +124,15 @@ pytest --collect-only
 2. **单例模式**: Settings配置类使用单例模式,确保测试过程中配置信息一致
 
 3. **钩子机制**: 通过pytest钩子函数(pytest_configure, pytest_runtest_setup等)自定义测试执行流程
+   - conftest.py中定义了7个常用钩子函数
+   - test_hooks_examples.py演示钩子的实际效果
 
 4. **模块化设计**: fixtures按功能分类(api/data/ui),便于管理和复用
+
+5. **Cookie认证模式**: 通过fixture管理认证信息
+   - 静态Cookie: 测试环境使用固定认证信息
+   - 动态Cookie: 通过登录API获取实时认证信息
+   - RequestUtil支持cookies参数,在GET/POST请求中携带认证信息
 
 ## 命名规范
 
@@ -138,4 +159,61 @@ def test_example(settings, logger, timer):
 from src.utils.logger import LoggerUtil
 from src.config.settings import Settings
 from src.fixtures.api_fixture import api_fixtures
+from src.utils.request_util import RequestUtil
+```
+
+## 核心功能特性
+
+### 1. pytest钩子函数系统
+项目在conftest.py中实现了完整的钩子函数系统,包括:
+- `pytest_configure` - 配置初始化和标记注册
+- `pytest_collection_modifyitems` - 测试收集和自动标记
+- `pytest_runtest_setup` - 测试执行前钩子
+- `pytest_runtest_teardown` - 测试执行后钩子
+- `pytest_runtest_makereport` - 测试结果报告钩子
+- `pytest_sessionstart` - 会话开始钩子
+- `pytest_sessionfinish` - 会话结束钩子
+
+运行`pytest tests/test_advanced/test_hooks_examples.py -v -s`可查看钩子效果。
+
+### 2. Cookie认证支持
+RequestUtil工具类已扩展支持Cookie认证:
+- GET方法支持cookies参数
+- POST方法支持cookies参数
+- 提供静态和动态两种认证fixture模式
+
+示例:
+```python
+# 使用静态Cookie
+def test_with_auth(self, settings, auth_cookies):
+    response = RequestUtil.get(url, cookies=auth_cookies)
+
+# 使用动态Cookie
+def test_with_dynamic_auth(self, settings, dynamic_auth_token):
+    response = RequestUtil.post(url, json=data, cookies=dynamic_auth_token)
+```
+
+详细文档请参考: [docs/api_cookie_auth_guide.md](docs/api_cookie_auth_guide.md)
+
+### 3. 全局Fixtures
+- `settings` - Settings配置单例,提供API URL、超时等配置
+- `logger` - LoggerUtil日志工具,支持测试日志记录
+- `timer` - 测试计时器,记录每个测试的执行时间
+
+### 4. 测试标记系统
+项目支持以下测试标记:
+- `smoke` - 冒烟测试
+- `api` - API测试
+- `ui` - UI测试
+- `regression` - 回归测试
+- `slow` - 慢速测试
+- `fast` - 快速测试(自动添加)
+
+使用示例:
+```bash
+# 只运行冒烟测试
+pytest -m smoke
+
+# 排除慢速测试
+pytest -m "not slow"
 ```

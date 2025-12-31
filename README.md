@@ -36,7 +36,8 @@ pytest_learn/
 │   ├── test_advanced/  # 高级测试示例
 │   │   ├── __init__.py
 │   │   ├── test_fixtures.py       # fixtures深入
-│   │   ├── test_hooks.py          # pytest钩子
+│   │   ├── test_hooks.py          # pytest钩子概念
+│   │   ├── test_hooks_examples.py # pytest钩子实际示例
 │   │   └── test_marks.py          # 自定义标记
 │   ├── test_api/       # API测试示例
 │   │   ├── __init__.py
@@ -44,7 +45,11 @@ pytest_learn/
 │   └── test_ui/        # UI测试示例（Page Object模式）
 │       ├── __init__.py
 │       └── test_page_object.py    # Page Object示例
-└── docs/               # 文档目录
+├── docs/               # 文档目录
+│   ├── pytest_hooks_guide.md       # pytest钩子函数使用指南
+│   └── api_cookie_auth_guide.md    # API Cookie认证测试指南
+└── data/               # 测试数据
+    └── test_data.json              # 示例测试数据
 ```
 
 ## 快速开始
@@ -103,12 +108,14 @@ pytest -v
 
 ### 进阶阶段（/tests/test_advanced/）
 4. `test_fixtures.py` - 深入理解fixtures
-5. `test_hooks.py` - 使用pytest钩子
-6. `test_marks.py` - 自定义标记和分类
+5. `test_hooks.py` - pytest钩子概念
+6. `test_hooks_examples.py` - pytest钩子实际示例
+7. `test_marks.py` - 自定义标记和分类
 
 ### 实战阶段（/tests/test_api/ 和 /tests/test_ui/）
-7. `test_api_demo.py` - API接口测试
-8. `test_page_object.py` - Page Object模式
+8. `test_api_demo.py` - API接口测试
+   - 包含Cookie认证场景示例
+9. `test_page_object.py` - Page Object模式
 
 ## 核心概念
 
@@ -117,12 +124,22 @@ Fixture是pytest的核心功能，用于：
 - 准备测试数据
 - 设置测试环境
 - 清理测试资源
+- 管理测试认证（如Cookie认证）
 
 ```python
 @pytest.fixture
 def user_data():
     """返回测试用户数据"""
     return {"username": "test_user", "email": "test@example.com"}
+
+@pytest.fixture
+def auth_cookies():
+    """返回认证Cookie"""
+    return {
+        "session_id": "abc123",
+        "auth_token": "token123",
+        "user_role": "admin"
+    }
 ```
 
 ### 参数化测试
@@ -155,8 +172,21 @@ assert "error" not in message
 | `pytest -s` | 打印print输出 |
 | `pytest --collect-only` | 列出所有测试 |
 | `pytest -k "test_name"` | 运行匹配的测试 |
+| `pytest -m smoke` | 运行特定标记的测试 |
 | `pytest --tb=short` | 短格式错误信息 |
 | `pytest --html=report.html` | 生成HTML报告 |
+
+## 文档资源
+
+### 详细文档
+- [pytest钩子函数使用指南](docs/pytest_hooks_guide.md) - 深入理解pytest钩子函数的生命周期和使用场景
+- [API Cookie认证测试指南](docs/api_cookie_auth_guide.md) - 学习如何使用Cookie进行API认证测试
+
+### 测试示例
+- **基础测试**: [test_basic/](tests/test_basic/) - 测试编写入门
+- **高级测试**: [test_advanced/](tests/test_advanced/) - fixtures、钩子、标记
+- **API测试**: [test_api/](tests/test_api/) - API接口测试和Cookie认证
+- **UI测试**: [test_ui/](tests/test_ui/) - Page Object模式
 
 ## 依赖包说明
 
