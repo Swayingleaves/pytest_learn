@@ -32,3 +32,4 @@ htmlcov/
 config/local_settings.py
 reports/
 logs/
+screenshots/
