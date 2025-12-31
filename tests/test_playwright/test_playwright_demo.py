@@ -19,6 +19,7 @@ Playwright要点：
 """
 
 import pytest
+import re
 from playwright.sync_api import Page, expect
 
 
@@ -189,7 +190,7 @@ class TestPlaywrightAssertions:
 
         # 验证元素的CSS属性
         h1 = page.locator("h1")
-        expect(h1).to_have_css("font-family", /Times New Roman/)
+        expect(h1).to_have_css("font-family", re.compile(r"Times New Roman"))
 
 
 class TestPlaywrightForms:
