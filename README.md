@@ -182,9 +182,108 @@ assert "error" not in message
 | `pytest -k "test_name"` | 运行匹配的测试 |
 | `pytest -m smoke` | 运行特定标记的测试 |
 | `pytest --tb=short` | 短格式错误信息 |
-| `pytest --html=report.html` | 生成HTML报告 |
 | `pytest tests/test_playwright/ --browser chromium` | 运行Playwright测试（Chromium） |
 | `pytest tests/test_playwright/ --headed` | 显示浏览器窗口 |
+
+## HTML测试报告
+
+### 基本用法
+
+pytest-html插件用于生成美观的HTML测试报告。
+
+```bash
+# 生成HTML报告（基本用法）
+pytest --html=reports/report.html
+
+# 生成自包含报告（推荐，可独立分享）
+pytest --html=reports/report.html --self-contained-html
+```
+
+**参数说明**：
+- `--html=reports/report.html` - 指定报告生成路径
+- `--self-contained-html` - 将CSS和JavaScript嵌入HTML，使报告可独立分享
+
+### 指定特定测试用例生成报告
+
+报告只会统计你实际运行的测试用例，不会自动包含所有用例。
+
+#### 1. 指定目录生成报告
+```bash
+# 只为test_basic目录下的测试生成报告
+pytest tests/test_basic/ --html=reports/basic_tests.html --self-contained-html
+```
+
+#### 2. 指定单个测试文件
+```bash
+# 只为test_first_test.py生成报告
+pytest tests/test_basic/test_first_test.py --html=reports/single_file.html --self-contained-html
+```
+
+#### 3. 使用-k参数过滤测试名称
+```bash
+# 只运行名称包含"addition"的测试并生成报告
+pytest tests/test_basic/ -k "addition" --html=reports/filtered_tests.html --self-contained-html
+```
+
+#### 4. 指定单个测试类
+```bash
+# 只运行TestParametrizeBasic类的测试
+pytest tests/test_basic/test_parametrize.py::TestParametrizeBasic --html=reports/single_class.html --self-contained-html
+```
+
+#### 5. 指定单个测试函数
+```bash
+# 只运行test_addition测试函数
+pytest tests/test_basic/test_first_test.py::TestMathOperations::test_addition --html=reports/single_test.html --self-contained-html
+```
+
+#### 6. 使用标记过滤
+```bash
+# 只运行带smoke标记的测试
+pytest -m smoke --html=reports/smoke_tests.html --self-contained-html
+
+# 排除慢速测试
+pytest -m "not slow" --html=reports/fast_tests.html --self-contained-html
+```
+
+### 报告内容说明
+
+生成的HTML报告包含：
+- **Summary**: 测试总数、通过数、失败数、跳过数、执行时间
+- **Test Results**: 每个测试的详细信息
+  - 测试名称和状态
+  - 执行时间
+  - 错误堆栈（失败时）
+  - 日志输出（如果有）
+
+### 高级用法
+
+```bash
+# 生成带时间戳的报告（避免覆盖）
+pytest --html=reports/report_$(date +%Y%m%d_%H%M%S).html --self-contained-html
+
+# 同时生成详细输出和报告
+pytest --html=reports/report.html --self-contained-html -v -s
+```
+
+### 查看报告
+
+```bash
+# macOS
+open reports/report.html
+
+# Linux
+xdg-open reports/report.html
+
+# Windows
+start reports/report.html
+```
+
+### 注意事项
+
+- 报告内容取决于运行的测试范围，不会自动包含所有用例
+- reports目录会自动创建（如果不存在）
+- 使用`--self-contained-html`确保报告样式可以离线查看
 
 ## 文档资源
 
