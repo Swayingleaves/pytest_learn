@@ -109,10 +109,14 @@ pytest --collect-only
 - `test_api/` - API测试示例
   - `test_api_demo.py` - 包含Cookie认证场景的API测试
 - `test_ui/` - UI测试示例(Page Object模式)
+- `test_playwright/` - Playwright现代化UI测试示例
+  - `conftest.py` - Playwright配置和失败截图钩子
+  - `test_playwright_demo.py` - Playwright测试示例(基础/高级/断言/表单/等待)
 
 **docs/** - 文档目录
 - `pytest_hooks_guide.md` - pytest钩子函数完整使用指南
 - `api_cookie_auth_guide.md` - API Cookie认证测试指南
+- `playwright_guide.md` - Pytest-Playwright测试完整指南
 
 **data/** - 测试数据
 - `test_data.json` - 示例测试数据文件
