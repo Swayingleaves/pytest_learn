@@ -1,0 +1,26 @@
+{
+    "users": [
+        {
+            "id": 1,
+            "name": "Alice",
+            "email": "alice@example.com"
+        },
+        {
+            "id": 2,
+            "name": "Bob",
+            "email": "bob@example.com"
+        }
+    ],
+    "posts": [
+        {
+            "userId": 1,
+            "id": 1,
+            "title": "First Post",
+            "body": "Content of the first post"
+        }
+    ],
+    "config": {
+        "timeout": 30,
+        "retries": 3
+    }
+}
