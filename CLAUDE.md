@@ -111,7 +111,8 @@ pytest --collect-only
 - `test_ui/` - UI测试示例(Page Object模式)
 - `test_playwright/` - Playwright现代化UI测试示例
   - `conftest.py` - Playwright配置和失败截图钩子
-  - `test_playwright_demo.py` - Playwright测试示例(基础/高级/断言/表单/等待)
+  - `test_playwright_demo.py` - Playwright测试示例(基础/高级/断言/表单/等待/交互/元素定位/真实网站测试)
+  - `test_page.html` - 本地HTML测试页面
 
 **docs/** - 文档目录
 - `pytest_hooks_guide.md` - pytest钩子函数完整使用指南
@@ -220,4 +221,23 @@ pytest -m smoke
 
 # 排除慢速测试
 pytest -m "not slow"
+```
+
+### 5. Playwright可视化调试
+Playwright测试已配置为可视化调试模式，方便观察测试执行过程：
+
+默认配置：
+- **慢动作模式**：每个操作间隔500毫秒
+- **显示浏览器窗口**：非无头模式，可以看到浏览器操作过程
+- **失败自动截图**：测试失败时自动截图保存到screenshots目录
+
+配置文件位置：
+- Playwright配置：[tests/test_playwright/conftest.py](tests/test_playwright/conftest.py)
+- 浏览器启动参数（第13-27行）：控制慢动作模式和窗口显示
+- 浏览器上下文参数（第30-54行）：控制viewport、User-Agent等
+
+调试示例：
+```bash
+# 运行单个测试，清楚观察每个步骤
+pytest tests/test_playwright/test_playwright_demo.py::TestCsdnSearch::test_search_pytest_on_csdn -v -s
 ```

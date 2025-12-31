@@ -181,9 +181,34 @@ assert "error" not in message
 | `pytest --collect-only` | 列出所有测试 |
 | `pytest -k "test_name"` | 运行匹配的测试 |
 | `pytest -m smoke` | 运行特定标记的测试 |
+| `pytest -m "not slow"` | 排除慢速测试 |
 | `pytest --tb=short` | 短格式错误信息 |
 | `pytest tests/test_playwright/ --browser chromium` | 运行Playwright测试（Chromium） |
-| `pytest tests/test_playwright/ --headed` | 显示浏览器窗口 |
+| `pytest tests/test_playwright/ --browser firefox` | 运行Playwright测试（Firefox） |
+| `pytest tests/test_playwright/ --headed` | 显示浏览器窗口（用于调试） |
+
+## Playwright可视化调试
+
+Playwright测试已配置为可视化调试模式，方便观察测试执行过程：
+
+### 默认配置
+- **慢动作模式**：每个操作间隔500毫秒
+- **显示浏览器窗口**：非无头模式，可以看到浏览器操作过程
+- **失败自动截图**：测试失败时自动截图保存到screenshots目录（已被.gitignore）
+
+### 调试建议
+```bash
+# 运行单个测试，清楚观察每个步骤
+pytest tests/test_playwright/test_playwright_demo.py::TestCsdnSearch::test_search_pytest_on_csdn -v -s
+
+# 修改慢动作速度（编辑tests/test_playwright/conftest.py）
+# "slow_mo": 500  # 改为1000会更慢，100会更快
+```
+
+### 配置文件位置
+- Playwright配置：[tests/test_playwright/conftest.py](tests/test_playwright/conftest.py)
+- 浏览器启动参数（第13-27行）：控制慢动作模式和窗口显示
+- 浏览器上下文参数（第30-54行）：控制viewport、User-Agent等
 
 ## HTML测试报告
 
