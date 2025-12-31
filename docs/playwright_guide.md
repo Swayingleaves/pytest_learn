@@ -13,6 +13,9 @@
 pip install pytest-playwright
 
 # 安装浏览器（首次使用必须）
+playwright install chromium
+
+# 安装全部
 playwright install
 ```
 

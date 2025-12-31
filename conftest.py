@@ -226,9 +226,6 @@ def pytest_runtest_makereport(item, call):
     """
     # 当测试执行完成时（when = 'call'）
     if call.when == "call":
-        # 获取测试结果
-        outcome = call.result if call.result is not None else call.excinfo
-
         # 测试通过时打印信息
         if call.excinfo is None:
             print(f"  🎉 测试通过!")
