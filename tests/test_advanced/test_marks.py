@@ -70,8 +70,8 @@ class TestXFail:
         预期失败的测试
 
         使用@pytest.mark.xfail标记预期失败的测试。
-        如果测试失败，报告为xpass（unexpectedly passed）
-        如果测试通过，报告为xfail（expectedly failed）
+        如果测试失败，报告为xfail（expectedly failed）
+        如果测试通过，报告为xpass（unexpectedly passed）
         """
         # 这个测试预期会失败
         assert False

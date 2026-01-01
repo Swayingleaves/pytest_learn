@@ -9,9 +9,9 @@
 pytest_learn/
 ├── .gitignore          # Git忽略配置
 ├── README.md           # 项目说明文档
-├── pytest.ini          # pytest配置文件
-├── conftest.py         # pytest全局fixtures
-├── requirements.txt    # 完整依赖(包含API/UI测试)
+├── pytest.ini          # pytest配置文件 详细的请看文档/docs/pytest_配置文件详解.md
+├── conftest.py         # pytest全局fixtures 详细的请看文档/docs/pytest_fixtures详解.md
+├── requirements.txt    # 完整依赖(包含API/UI测试)  详细的请看文档/py_base_docs/base.md
 ├── requirements-minimal.txt  # 最小依赖(仅运行基础测试)
 ├── src/
 │   ├── fixtures/       # 自定义fixtures
