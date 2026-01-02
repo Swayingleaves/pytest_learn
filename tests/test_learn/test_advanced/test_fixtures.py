@@ -36,6 +36,7 @@ class TestFixturesBasic:
 
     @pytest.fixture
     def sample_data(self):
+
         """
         创建一个示例数据fixture
 

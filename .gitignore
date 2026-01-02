@@ -33,3 +33,5 @@ config/local_settings.py
 reports/
 logs/
 screenshots/
+results/
+.claude

@@ -12,6 +12,7 @@ import logging
 import sys
 from pathlib import Path
 from typing import Optional
+from datetime import datetime
 
 
 class LoggerUtil:
@@ -44,7 +45,7 @@ class LoggerUtil:
         """
         # 创建日志器
         logger = logging.getLogger("pytest_learn")
-        # 设置日志级别
+        # 设置最低打印日志级别 DEBUG < INFO < WARNING < ERROR < CRITICAL
         logger.setLevel(logging.DEBUG)
 
         # 创建格式器 - 定义日志输出格式
@@ -58,6 +59,21 @@ class LoggerUtil:
         console_handler.setLevel(logging.INFO)
         console_handler.setFormatter(formatter)
         logger.addHandler(console_handler)
+
+        # 创建文件处理器 - 输出到文件
+        # 获取项目根目录
+        project_root = Path(__file__).parent.parent.parent
+        logs_dir = project_root / "logs"
+        # 确保日志目录存在
+        logs_dir.mkdir(exist_ok=True)
+
+        # 日志文件按日期命名
+        today = datetime.now().strftime("%Y-%m-%d")
+        log_file = logs_dir / f"pytest_{today}.log"
+        file_handler = logging.FileHandler(log_file, encoding='utf-8')
+        file_handler.setLevel(logging.DEBUG)
+        file_handler.setFormatter(formatter)
+        logger.addHandler(file_handler)
 
         # 保存日志器实例
         self._logger = logger
@@ -109,10 +125,6 @@ class LoggerUtil:
         @param message 日志消息
         """
         self._logger.critical(message)
-
-
-# 创建全局日志工具实例
-logger_util = LoggerUtil()
 
 # 提供便捷的日志获取方法
 def get_logger() -> logging.Logger:

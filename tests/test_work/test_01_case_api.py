@@ -1,7 +1,12 @@
 import pytest
 import requests
+from src.utils.logger import LoggerUtil
 
-class TestCase1:
+# 创建日志实例
+logger = LoggerUtil()
+
+# 类名+数字编号，执行时会按数字顺序依次执行类里面的用例
+class Test01CaseApi:
     # 定义一个类属性
     device_id = ''
 
@@ -31,10 +36,13 @@ class TestCase1:
         # 返回登录成功后的token并打印
         token = response.json()["data"]["access_token"]
         print(f'获取到的token:{token}')
+        # 记录token日志，会打印到控制台，同时存入日志文件--logger.py文件中配置
+        logger.info(f'获取到的token:{token}')
         return token
 
+    # 方法名+数字编号，执行时会按数字顺序依次执行用例方法
     # 传入前置条件方法,先获取到TOKEN,再执行下方用例
-    def test_get_user_info(self, get_login_token):
+    def test_01_get_user_info(self, get_login_token):
         """
         测试用例1
         验证简单用户信息是否正确。
@@ -88,7 +96,7 @@ class TestCase1:
         assert req.json()["data"]["account"] == "zhengl"
 
 
-    def test_list_query(self, get_login_token):
+    def test_02_list_query(self, get_login_token):
         """
         测试用例2
         简单验证查询结果是否正确。
@@ -116,12 +124,12 @@ class TestCase1:
         assert req.json()["code"] == 200
         # 验证返回的结列表中第一条数据的编号是否包含"22"
         assert "22" in req.json()["data"]["list"][0]["deviceId"]
+        # 将此用例的返回结果赋值给类属性
+        Test01CaseApi.device_id =req.json()["data"]["list"][0]["deviceId"]
         # 验证返回的结列表中第一条数据的编号是否=223345
         assert req.json()["data"]["list"][0]["deviceId"] == '223345'
-        # 将此用例的返回结果赋值给类属性
-        TestCase1.device_id =req.json()["data"]["list"][0]["deviceId"]
 
-    def test_get_device_conf(self,get_login_token):
+    def test_03_get_device_conf(self,get_login_token):
         """
         测试用例3
         简单验证查询结果是否正确。
@@ -141,9 +149,10 @@ class TestCase1:
             # 可直接赋值传参
             # "deviceId": "112233"
             # 也可直接通过类属性使用前面用例的返回值作为入参
-            "deviceId": TestCase1.device_id
+            "deviceId": Test01CaseApi.device_id
         }
         # 发送GET请求 等同于 https://172.25.53.92/devapi/terminal/gatherLog/configStr?deviceId=112233
         req = requests.get(url, headers=headers, params=params, verify=False)
+        logger.info(f'获取到的设备配置信息:{req.json()}')
         # 验证简单的断言,code是否为200
         assert req.json()["code"] == 200
