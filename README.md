@@ -60,9 +60,6 @@ pip install -r requirements-minimal.txt
 # 包含所有测试所需的功能模块
 pip install -r requirements.txt
 ```
-
-> **提示**: 如果你是pytest初学者，建议先使用`requirements-minimal.txt`，专注于学习pytest核心功能。需要学习API或UI测试时，再安装完整依赖。
-
 ### 2. 运行测试
 
 ```bash
@@ -284,16 +281,7 @@ pytest --html=reports/report.html --self-contained-html -v -s
 
 ### 查看报告
 
-```bash
-# macOS
-open reports/report.html
-
-# Linux
-xdg-open reports/report.html
-
-# Windows
-start reports/report.html
-```
+使用浏览器打开报告文件（如Chrome、Firefox等）即可查看。
 
 ### 注意事项
 
@@ -313,7 +301,7 @@ start reports/report.html
 - **高级测试**: [test_learn/test_advanced/](tests/test_learn/test_advanced/) - fixtures、钩子、标记
 - **API测试**: [test_learn/test_api/](tests/test_learn/test_api/) - API接口测试和Cookie认证
 - **Playwright测试**: [test_learn/test_playwright/](tests/test_learn/test_playwright/) - 现代化浏览器自动化测试
-- **工作测试**: [test_work/](tests/test_work/) - 存放真实的测试用例
+- **工作测试**: [test_work/](tests/test_work/) - 存放真实的测试用例，用于实际项目测试
 
 ## 依赖包说明
 

@@ -43,7 +43,7 @@ class TestPlaywrightBasic:
 
         访问测试页面并验证页面标题。
         """
-        # 访问测试页面
+        # 访问测试页面 这里使用的本地HTML文件，实际测试中应替换为目标URL比如https://www.baidu.com
         page.goto(TEST_PAGE_PATH)
 
         # 验证页面标题
