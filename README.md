@@ -10,7 +10,7 @@ pytest_learn/
 ├── .gitignore          # Git忽略配置
 ├── README.md           # 项目说明文档
 ├── pytest.ini          # pytest配置文件
-├── conftest.py         # pytest全局fixtures和钩子函数
+├── conftest.py         # pytest全局fixtures
 ├── requirements.txt    # 完整依赖(包含API/UI测试)
 ├── requirements-minimal.txt  # 最小依赖(仅运行基础测试)
 ├── src/                # 工具类和配置
@@ -34,7 +34,7 @@ pytest_learn/
 │   │       ├── test_page.html         # 本地HTML测试页面
 │   │       └── test_playwright_demo.py # Playwright测试示例
 │   └── test_work/      # 工作测试用例
-│       # 存放真实的测试用例
+│       └── .gitkeep               # 保留目录结构
 ├── docs/               # 文档目录
 │   ├── pytest_hooks_guide.md       # pytest钩子函数使用指南
 │   ├── api_cookie_auth_guide.md    # API Cookie认证测试指南
@@ -102,14 +102,12 @@ pytest -v
 
 ### 进阶阶段（/tests/test_learn/test_advanced/）
 4. `test_fixtures.py` - 深入理解fixtures
-5. `test_hooks.py` - pytest钩子概念
-6. `test_hooks_examples.py` - pytest钩子实际示例
-7. `test_marks.py` - 自定义标记和分类
+5. `test_marks.py` - 自定义标记和分类
 
 ### 实战阶段（/tests/test_learn/test_api/ 和 /tests/test_learn/test_playwright/）
-8. `test_api_demo.py` - API接口测试
+6. `test_api_demo.py` - API接口测试
    - 包含Cookie认证场景示例
-9. `test_playwright_demo.py` - Playwright现代化UI测试
+7. `test_playwright_demo.py` - Playwright现代化UI测试
     - 自动等待机制
     - 多浏览器支持（Chromium、Firefox、WebKit）
 

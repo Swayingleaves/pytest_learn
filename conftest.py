@@ -180,7 +180,7 @@ def browser_type_launch_args(browser_type_launch_args):
     return {
         **browser_type_launch_args,
         "slow_mo": 200,  # 慢动作模式，每个操作后暂停200毫秒
-        "headless": True  # False显示浏览器窗口 True 为无头模式不显示浏览器界面
+        "headless": False  # False 显示浏览器窗口 True 为无头模式不显示浏览器界面
     }
 
 
@@ -224,6 +224,56 @@ def page(page):
     page.set_default_timeout(30000)  # 30秒
     page.set_default_navigation_timeout(30000)
     return page
+
+
+@pytest.fixture(scope="class")
+def ui_browser_and_context(browser_type_launch_args, browser_context_args):
+    """
+    UI测试用浏览器和上下文（类级别）
+
+    提供整个测试类共享的浏览器实例和上下文，只启动一次。
+
+    @param browser_type_launch_args 浏览器启动参数
+    @param browser_context_args 浏览器上下文参数
+    @return tuple (browser, context)
+    """
+    from playwright.sync_api import sync_playwright
+
+    playwright = sync_playwright().start()
+    browser = playwright.chromium.launch(**browser_type_launch_args)
+    context = browser.new_context(**browser_context_args)
+
+    yield browser, context
+
+    context.close()
+    browser.close()
+    playwright.stop()
+
+
+@pytest.fixture(scope="class")
+def logged_in_page(ui_browser_and_context, expect):
+    """
+    已登录的页面对象（类级别）
+
+    自动执行登录操作，整个测试类只登录一次。
+
+    @param ui_browser_and_context 浏览器和上下文
+    @param expect Playwright断言工具
+    @return 已登录的页面对象
+    """
+    browser, context = ui_browser_and_context
+    page = context.new_page()
+
+    # 登录
+    url = "https://172.25.53.92/login"
+    page.goto(url)
+    expect(page).to_have_title("登录 - 终端运维保障平台")
+    page.locator('[name="username"]').fill('zhengl')
+    page.locator('[type="password"]').fill('Zd@123')
+    page.locator('[type="button"][class="el-button el-button--primary"]').click()
+    expect(page).to_have_url("https://172.25.53.92/sub/dev/dashboard")
+
+    yield page
 
 
 # ========================================
