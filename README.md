@@ -9,50 +9,36 @@
 pytest_learn/
 ├── .gitignore          # Git忽略配置
 ├── README.md           # 项目说明文档
-├── pytest.ini          # pytest配置文件 详细的请看文档/docs/pytest_配置文件详解.md
-├── conftest.py         # pytest全局fixtures 详细的请看文档/docs/pytest_fixtures详解.md
-├── requirements.txt    # 完整依赖(包含API/UI测试)  详细的请看文档/py_base_docs/base.md
+├── pytest.ini          # pytest配置文件
+├── conftest.py         # pytest全局fixtures和钩子函数
+├── requirements.txt    # 完整依赖(包含API/UI测试)
 ├── requirements-minimal.txt  # 最小依赖(仅运行基础测试)
-├── src/
-│   ├── fixtures/       # 自定义fixtures
-│   │   ├── __init__.py
-│   │   ├── api_fixture.py    # API测试fixtures
-│   │   ├── data_fixture.py   # 测试数据fixtures
-│   │   └── ui_fixture.py     # UI测试fixtures
+├── src/                # 工具类和配置
 │   ├── utils/          # 工具类
-│   │   ├── __init__.py
 │   │   ├── logger.py          # 日志工具
 │   │   └── request_util.py    # HTTP请求工具
 │   └── config/         # 配置模块
-│       ├── __init__.py
 │       └── settings.py        # 全局配置
-├── tests/
-│   ├── conftest.py     # 测试目录级别fixtures
-│   ├── test_basic/     # 基础测试示例
-│   │   ├── __init__.py
-│   │   ├── test_first_test.py     # 第一个测试
-│   │   ├── test_assertions.py     # 断言示例
-│   │   └── test_parametrize.py    # 参数化测试
-│   ├── test_advanced/  # 高级测试示例
-│   │   ├── __init__.py
-│   │   ├── test_fixtures.py       # fixtures深入
-│   │   ├── test_hooks.py          # pytest钩子概念
-│   │   ├── test_hooks_examples.py # pytest钩子实际示例
-│   │   └── test_marks.py          # 自定义标记
-│   ├── test_api/       # API测试示例
-│   │   ├── __init__.py
-│   │   └── test_api_demo.py       # API测试示例
-│   └── test_ui/        # UI测试示例（Page Object模式）
-│       ├── __init__.py
-│       └── test_page_object.py    # Page Object示例
-├── tests/test_playwright/    # Playwright测试示例
-│   ├── __init__.py
-│   ├── conftest.py           # Playwright配置和fixtures
-│   └── test_playwright_demo.py # Playwright测试示例
+├── tests/              # 测试目录
+│   ├── test_learn/     # 学习测试示例
+│   │   ├── test_basic/        # 基础测试示例
+│   │   │   ├── test_first_test.py     # 第一个测试
+│   │   │   ├── test_assertions.py     # 断言示例
+│   │   │   └── test_parametrize.py    # 参数化测试
+│   │   ├── test_advanced/     # 高级测试示例
+│   │   │   ├── test_fixtures.py       # fixtures深入
+│   │   │   └── test_marks.py          # 自定义标记
+│   │   ├── test_api/          # API测试示例
+│   │   │   └── test_api_demo.py       # API测试示例
+│   │   └── test_playwright/   # Playwright UI测试示例
+│   │       ├── test_page.html         # 本地HTML测试页面
+│   │       └── test_playwright_demo.py # Playwright测试示例
+│   └── test_work/      # 工作测试用例
+│       # 存放真实的测试用例
 ├── docs/               # 文档目录
 │   ├── pytest_hooks_guide.md       # pytest钩子函数使用指南
 │   ├── api_cookie_auth_guide.md    # API Cookie认证测试指南
-│   └── playwright_guide.md        # Pytest-Playwright测试指南
+│   └── playwright_guide.md         # Pytest-Playwright测试指南
 └── data/               # 测试数据
     └── test_data.json              # 示例测试数据
 ```
@@ -83,17 +69,23 @@ pip install -r requirements.txt
 # 运行所有测试
 pytest
 
+# 运行学习测试（test_learn目录）
+pytest tests/test_learn/
+
+# 运行工作测试（test_work目录）
+pytest tests/test_work/
+
 # 运行指定目录
-pytest tests/test_basic/
+pytest tests/test_learn/test_basic/
 
 # 运行指定文件
-pytest tests/test_basic/test_first_test.py
+pytest tests/test_learn/test_basic/test_first_test.py
 
 # 运行指定测试函数（不在类中）
-pytest tests/test_basic/test_first_test.py::TestBasicConcepts::test_hello_world
+pytest tests/test_learn/test_basic/test_first_test.py::TestBasicConcepts::test_hello_world
 
 # 使用-k参数匹配测试名（推荐，无需指定完整路径）
-pytest tests/test_basic/test_first_test.py -k test_hello_world
+pytest tests/test_learn/test_basic/test_first_test.py -k test_hello_world
 
 # 生成HTML报告
 pytest --html=reports/report.html
@@ -106,22 +98,21 @@ pytest -v
 
 ## 学习路径
 
-### 初级阶段（/tests/test_basic/）
+### 初级阶段（/tests/test_learn/test_basic/）
 1. `test_first_test.py` - 编写第一个测试
 2. `test_assertions.py` - 学习各种断言方式
 3. `test_parametrize.py` - 学习参数化测试
 
-### 进阶阶段（/tests/test_advanced/）
+### 进阶阶段（/tests/test_learn/test_advanced/）
 4. `test_fixtures.py` - 深入理解fixtures
 5. `test_hooks.py` - pytest钩子概念
 6. `test_hooks_examples.py` - pytest钩子实际示例
 7. `test_marks.py` - 自定义标记和分类
 
-### 实战阶段（/tests/test_api/、/tests/test_ui/ 和 /tests/test_playwright/）
+### 实战阶段（/tests/test_learn/test_api/ 和 /tests/test_learn/test_playwright/）
 8. `test_api_demo.py` - API接口测试
    - 包含Cookie认证场景示例
-9. `test_page_object.py` - Selenium Page Object模式
-10. `test_playwright_demo.py` - Playwright现代化UI测试
+9. `test_playwright_demo.py` - Playwright现代化UI测试
     - 自动等待机制
     - 多浏览器支持（Chromium、Firefox、WebKit）
 
@@ -199,16 +190,16 @@ Playwright测试已配置为可视化调试模式，方便观察测试执行过�
 ### 调试建议
 ```bash
 # 运行单个测试，清楚观察每个步骤
-pytest tests/test_playwright/test_playwright_demo.py::TestCsdnSearch::test_search_pytest_on_csdn -v -s
+pytest tests/test_learn/test_playwright/test_playwright_demo.py::TestCsdnSearch::test_search_pytest_on_csdn -v -s
 
-# 修改慢动作速度（编辑tests/test_playwright/conftest.py）
+# 修改慢动作速度（编辑根目录conftest.py中的browser_type_launch_args fixture）
 # "slow_mo": 500  # 改为1000会更慢，100会更快
 ```
 
 ### 配置文件位置
-- Playwright配置：[tests/test_playwright/conftest.py](tests/test_playwright/conftest.py)
-- 浏览器启动参数（第13-27行）：控制慢动作模式和窗口显示
-- 浏览器上下文参数（第30-54行）：控制viewport、User-Agent等
+- Playwright配置：[conftest.py](conftest.py) (根目录，已合并所有配置)
+- 浏览器启动参数（第170-184行）：控制慢动作模式和窗口显示
+- 浏览器上下文参数（第187-211行）：控制viewport、User-Agent等
 
 ## HTML测试报告
 
@@ -318,11 +309,11 @@ start reports/report.html
 - [Pytest-Playwright测试指南](docs/playwright_guide.md) - 学习如何使用Playwright进行现代化浏览器自动化测试
 
 ### 测试示例
-- **基础测试**: [test_basic/](tests/test_basic/) - 测试编写入门
-- **高级测试**: [test_advanced/](tests/test_advanced/) - fixtures、钩子、标记
-- **API测试**: [test_api/](tests/test_api/) - API接口测试和Cookie认证
-- **UI测试**: [test_ui/](tests/test_ui/) - Selenium Page Object模式
-- **Playwright测试**: [test_playwright/](tests/test_playwright/) - 现代化浏览器自动化测试
+- **基础测试**: [test_learn/test_basic/](tests/test_learn/test_basic/) - 测试编写入门
+- **高级测试**: [test_learn/test_advanced/](tests/test_learn/test_advanced/) - fixtures、钩子、标记
+- **API测试**: [test_learn/test_api/](tests/test_learn/test_api/) - API接口测试和Cookie认证
+- **Playwright测试**: [test_learn/test_playwright/](tests/test_learn/test_playwright/) - 现代化浏览器自动化测试
+- **工作测试**: [test_work/](tests/test_work/) - 存放真实的测试用例
 
 ## 依赖包说明
 

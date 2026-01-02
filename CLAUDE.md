@@ -31,14 +31,20 @@ pip install -r requirements.txt
 # 运行所有测试
 pytest
 
+# 运行学习测试
+pytest tests/test_learn/
+
+# 运行工作测试
+pytest tests/test_work/
+
 # 运行指定目录
-pytest tests/test_basic/
+pytest tests/test_learn/test_basic/
 
 # 运行指定文件
-pytest tests/test_basic/test_first_test.py
+pytest tests/test_learn/test_basic/test_first_test.py
 
 # 运行指定测试函数
-pytest tests/test_basic/test_first_test.py::TestBasicConcepts::test_hello_world
+pytest tests/test_learn/test_basic/test_first_test.py::TestBasicConcepts::test_hello_world
 
 # 显示详细输出
 pytest -v
@@ -90,10 +96,6 @@ pytest --collect-only
 ### 目录结构说明
 
 **src/** - 源代码目录
-- `fixtures/` - 自定义测试fixtures
-  - `api_fixture.py` - API测试fixtures(api_base_url, api_session, valid_user_data等)
-  - `data_fixture.py` - 测试数据fixtures
-  - `ui_fixture.py` - UI测试fixtures
 - `utils/` - 工具类
   - `logger.py` - 日志工具
   - `request_util.py` - HTTP请求工具
@@ -101,18 +103,18 @@ pytest --collect-only
   - `settings.py` - 全局配置类(单例模式,包含API URL、超时设置、测试数据路径等)
 
 **tests/** - 测试目录
-- `conftest.py` - 测试目录级别的fixtures(会继承根目录的conftest)
-- `test_basic/` - 基础测试示例(测试编写入门)
-- `test_advanced/` - 高级测试示例(fixtures深入、钩子、标记)
-  - `test_hooks.py` - pytest钩子概念介绍
-  - `test_hooks_examples.py` - pytest钩子实际示例(配合conftest.py中的钩子函数)
-- `test_api/` - API测试示例
-  - `test_api_demo.py` - 包含Cookie认证场景的API测试
-- `test_ui/` - UI测试示例(Page Object模式)
-- `test_playwright/` - Playwright现代化UI测试示例
-  - `conftest.py` - Playwright配置和失败截图钩子
-  - `test_playwright_demo.py` - Playwright测试示例(基础/高级/断言/表单/等待/交互/元素定位/真实网站测试)
-  - `test_page.html` - 本地HTML测试页面
+- `test_learn/` - 学习测试示例
+  - `test_basic/` - 基础测试示例(测试编写入门)
+  - `test_advanced/` - 高级测试示例(fixtures深入、钩子、标记)
+    - `test_hooks.py` - pytest钩子概念介绍
+    - `test_hooks_examples.py` - pytest钩子实际示例(配合conftest.py中的钩子函数)
+  - `test_api/` - API测试示例
+    - `test_api_demo.py` - 包含Cookie认证场景的API测试
+  - `test_playwright/` - Playwright现代化UI测试示例
+    - `test_playwright_demo.py` - Playwright测试示例(基础/高级/断言/表单/等待/交互/元素定位/真实网站测试)
+    - `test_page.html` - 本地HTML测试页面
+- `test_work/` - 工作测试用例
+  - 存放真实的测试用例
 
 **docs/** - 文档目录
 - `pytest_hooks_guide.md` - pytest钩子函数完整使用指南
@@ -132,7 +134,7 @@ pytest --collect-only
    - conftest.py中定义了7个常用钩子函数
    - test_hooks_examples.py演示钩子的实际效果
 
-4. **模块化设计**: fixtures按功能分类(api/data/ui),便于管理和复用
+4. **模块化设计**: 项目按功能模块组织,分为学习模块(test_learn)和工作模块(test_work),便于学习和实际工作分离
 
 5. **Cookie认证模式**: 通过fixture管理认证信息
    - 静态Cookie: 测试环境使用固定认证信息
@@ -163,7 +165,6 @@ def test_example(settings, logger, timer):
 ```python
 from src.utils.logger import LoggerUtil
 from src.config.settings import Settings
-from src.fixtures.api_fixture import api_fixtures
 from src.utils.request_util import RequestUtil
 ```
 
@@ -179,7 +180,7 @@ from src.utils.request_util import RequestUtil
 - `pytest_sessionstart` - 会话开始钩子
 - `pytest_sessionfinish` - 会话结束钩子
 
-运行`pytest tests/test_advanced/test_hooks_examples.py -v -s`可查看钩子效果。
+运行`pytest tests/test_learn/test_advanced/test_hooks_examples.py -v -s`可查看钩子效果。
 
 ### 2. Cookie认证支持
 RequestUtil工具类已扩展支持Cookie认证:
@@ -232,12 +233,12 @@ Playwright测试已配置为可视化调试模式，方便观察测试执行过�
 - **失败自动截图**：测试失败时自动截图保存到screenshots目录
 
 配置文件位置：
-- Playwright配置：[tests/test_playwright/conftest.py](tests/test_playwright/conftest.py)
-- 浏览器启动参数（第13-27行）：控制慢动作模式和窗口显示
-- 浏览器上下文参数（第30-54行）：控制viewport、User-Agent等
+- Playwright配置：[conftest.py](conftest.py) (根目录，已合并所有配置)
+- 浏览器启动参数（第170-184行）：控制慢动作模式和窗口显示
+- 浏览器上下文参数（第187-211行）：控制viewport、User-Agent等
 
 调试示例：
 ```bash
 # 运行单个测试，清楚观察每个步骤
-pytest tests/test_playwright/test_playwright_demo.py::TestCsdnSearch::test_search_pytest_on_csdn -v -s
+pytest tests/test_learn/test_playwright/test_playwright_demo.py::TestCsdnSearch::test_search_pytest_on_csdn -v -s
 ```

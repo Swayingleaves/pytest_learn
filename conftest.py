@@ -102,68 +102,133 @@ def timer():
 
 
 # ========================================
-# Pytest Hooks (钩子函数)
+# 测试目录级别Fixtures
 # ========================================
 
-def pytest_configure(config):
+@pytest.fixture
+def test_data_file(settings):
     """
-    pytest配置钩子
+    获取测试数据文件路径
 
-    在pytest初始化时调用，可以进行自定义配置。
-
-    使用场景：
-    - 注册自定义标记
-    - 添加全局配置
-    - 初始化插件
-
-    @param config pytest配置对象
+    @param settings 全局配置对象
+    @return Path 测试数据文件路径
     """
-    # 注册自定义标记，避免运行时警告
-    config.addinivalue_line("markers", "smoke: 冒烟测试")
-    config.addinivalue_line("markers", "api: API测试")
-    config.addinivalue_line("markers", "ui: UI测试")
-    config.addinivalue_line("markers", "regression: 回归测试")
-    config.addinivalue_line("markers", "slow: 慢速测试")
-    config.addinivalue_line("markers", "fast: 快速测试")
-
-    # 打印配置信息
-    print("\n" + "="*60)
-    print("🚀 Pytest 配置初始化")
-    print(f"📂 项目根目录: {config.rootpath}")
-    print("="*60)
+    return settings.TEST_DATA_FILE
 
 
-def pytest_collection_modifyitems(config, items):
+@pytest.fixture
+def temp_dir(tmp_path):
     """
-    测试用例收集修改钩子
+    提供临时目录
 
-    在测试用例收集完成后、排序前调用。
-    可以用于修改、过滤或排序测试用例。
+    用于测试中需要临时文件或目录的场景。
 
-    使用场景：
-    - 自动添加标记
-    - 动态修改测试顺序
-    - 根据条件过滤测试
-    - 添加测试ID
-
-    @param config pytest配置对象
-    @param items 收集到的测试用例列表
+    @param tmp_path pytest内置的临时目录fixture
+    @return Path 临时目录路径
     """
-    # 示例1：给所有测试用例添加通用标记
-    for item in items:
-        # 根据测试名称添加快速/慢速标记
-        if "slow" in item.nodeid.lower():
-            item.add_marker(pytest.mark.slow)
-        else:
-            item.add_marker(pytest.mark.fast)
-
-    # 示例2：统计测试数量
-    print(f"\n📊 收集到 {len(items)} 个测试用例")
-
-    # 示例3：按测试名称排序（可选）
-    # items.sort(key=lambda x: x.nodeid)
+    return tmp_path
 
 
+# ========================================
+# 常用测试数据Fixtures
+# ========================================
+
+@pytest.fixture
+def sample_user():
+    """
+    返回示例用户数据
+
+    @return Dict 用户数据字典
+    """
+    return {
+        "id": 1,
+        "name": "Test User",
+        "email": "test@example.com",
+        "username": "testuser"
+    }
+
+
+@pytest.fixture
+def sample_post():
+    """
+    返回示例帖子数据
+
+    @return Dict 帖子数据字典
+    """
+    return {
+        "userId": 1,
+        "id": 1,
+        "title": "Test Post Title",
+        "body": "This is the test post body content."
+    }
+
+
+# ========================================
+# Playwright测试Fixtures
+# ========================================
+
+@pytest.fixture(scope="session")
+def browser_type_launch_args(browser_type_launch_args):
+    """
+    配置浏览器启动参数
+
+    设置浏览器启动时的参数，如慢动作模式（用于调试）。
+
+    @param browser_type_launch_args 默认的浏览器启动参数
+    @return 更新后的浏览器启动参数
+    """
+    return {
+        **browser_type_launch_args,
+        "slow_mo": 200,  # 慢动作模式，每个操作后暂停200毫秒
+        "headless": True  # False显示浏览器窗口 True 为无头模式不显示浏览器界面
+    }
+
+
+@pytest.fixture(scope="session")
+def browser_context_args(browser_context_args):
+    """
+    配置浏览器上下文
+
+    设置浏览器上下文参数，如viewport大小、忽略HTTPS错误等。
+
+    @param browser_context_args 默认的浏览器上下文参数
+    @return 更新后的浏览器上下文参数
+    """
+    return {
+        **browser_context_args,
+        "viewport": {"width": 1920, "height": 1080},
+        "ignore_https_errors": True,
+        "locale": "zh-CN",
+        "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "extra_http_headers": {
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+            "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
+            "Accept-Encoding": "gzip, deflate, br",
+            "DNT": "1",
+            "Connection": "keep-alive",
+            "Upgrade-Insecure-Requests": "1",
+        }
+    }
+
+
+@pytest.fixture
+def page(page):
+    """
+    配置页面
+
+    为每个测试页面设置额外配置，如默认超时时间。
+
+    @param page Playwright页面对象
+    @return 配置后的页面对象
+    """
+    page.set_default_timeout(30000)  # 30秒
+    page.set_default_navigation_timeout(30000)
+    return page
+
+
+# ========================================
+# Pytest Hooks (钩子函数)
+# ========================================
 def pytest_runtest_setup(item):
     """
     测试执行前钩子
@@ -179,11 +244,7 @@ def pytest_runtest_setup(item):
     @param item 当前执行的测试用例
     """
     # 打印测试用例名称
-    print(f"\n▶️  开始测试: {item.name}")
-
-    # 检查是否包含特定标记
-    if item.get_closest_marker("slow"):
-        print("  ⚠️  这是一个慢速测试")
+    print(f"测试前执行")
 
 
 def pytest_runtest_teardown(item, nextitem):
@@ -201,78 +262,5 @@ def pytest_runtest_teardown(item, nextitem):
     @param nextitem 下一个要执行的测试用例（可能是None）
     """
     # 打印测试完成信息
-    print(f"✅ 测试完成: {item.name}")
+    print(f"测试后执行")
 
-    if nextitem:
-        print(f"  ⏭️  下一个: {nextitem.name}")
-    else:
-        print("  🏁 所有测试已完成")
-
-
-def pytest_runtest_makereport(item, call):
-    """
-    测试结果报告钩子
-
-    在测试结果生成时调用，可以用于自定义报告。
-
-    使用场景：
-    - 生成自定义测试报告
-    - 记录测试结果到日志
-    - 根据测试结果执行特定操作
-    - 添加测试截图（失败时）
-
-    @param item 当前执行的测试用例
-    @param call 测试执行调用信息
-    """
-    # 当测试执行完成时（when = 'call'）
-    if call.when == "call":
-        # 测试通过时打印信息
-        if call.excinfo is None:
-            print(f"  🎉 测试通过!")
-        # 测试失败时打印信息
-        elif call.excinfo and call.excinfo.typename not in ("Skipped", "XFailed"):
-            print(f"  ❌ 测试失败")
-        # 测试跳过时打印信息
-        elif call.excinfo and call.excinfo.typename == "Skipped":
-            print(f"  ⏭️  测试跳过")
-
-
-def pytest_sessionstart(session):
-    """
-    测试会话开始钩子
-
-    在整个测试会话开始时调用一次。
-
-    使用场景：
-    - 初始化测试环境
-    - 打开数据库连接
-    - 创建测试数据目录
-    - 记录会话开始时间
-
-    @param session 测试会话对象
-    """
-    print("\n" + "🌟"*30)
-    print("📋 测试会话开始")
-    print(f"⏰ 开始时间: {session.config._inicache.get('python_version', 'N/A')}")
-    print("🌟"*30)
-
-
-def pytest_sessionfinish(session, exitstatus):
-    """
-    测试会话结束钩子
-
-    在整个测试会话结束时调用一次。
-
-    使用场景：
-    - 清理测试环境
-    - 关闭数据库连接
-    - 生成最终报告
-    - 发送测试结果通知
-
-    @param session 测试会话对象
-    @param exitstatus 退出状态码
-    """
-    print("\n" + "🌟"*30)
-    print("📋 测试会话结束")
-    print(f"📊 退出状态: {exitstatus}")
-    print("🌟"*30)
